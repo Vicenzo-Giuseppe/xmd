@@ -1,0 +1,9 @@
+resolver: lts-19.14
+packages: 
+  - .
+extra-deps:
+  - xmobar-0.44
+  - netlink-1.1.1.0
+flags:
+  xmobar:
+    all_extensions: true
