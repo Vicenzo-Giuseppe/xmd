@@ -1,16 +1,19 @@
-module Prompt where 
-import Preferences
-import XMonad
-import XMonad.Prompt
-import XMonad.Prompt.Input
-import XMonad.Prompt.FuzzyMatch
-import XMonad.Layout.TabBarDecoration
-import XMonad.Util.Run ( runProcessWithInput)
-import Data.Char (isSpace)
+module Prompt where
+
 import Control.Arrow (first)
-import qualified XMonad.Actions.Search as S
+import Data.Char (isSpace)
 import qualified Data.Map as M
+import Preferences ( myFont )
+import XMonad
+import qualified XMonad.Actions.Search as S
+import XMonad.Layout.TabBarDecoration
+    ( XPPosition(CenteredAt, Top, xpCenterY, xpWidth) )
+import XMonad.Prompt
+import XMonad.Prompt.FuzzyMatch ( fuzzyMatch )
+import XMonad.Prompt.Input ( (?+), inputPrompt )
 import qualified XMonad.StackSet as W
+import XMonad.Util.Run (runProcessWithInput)
+
 ------------------------------------------------------------------------
 -- XPrompt
 ------------------------------------------------------------------------
@@ -18,11 +21,11 @@ xPromptConfig :: XPConfig
 xPromptConfig =
   def
     { font = myFont ++ "bold:size=16",
-      bgColor ="#643FFF",
+      bgColor = "#643FFF",
       fgColor = "#E8A2AF",
       bgHLight = "#FFFFFF",
-      fgHLight ="#89DCEB" ,
-      borderColor ="#535974",
+      fgHLight = "#89DCEB",
+      borderColor = "#535974",
       promptBorderWidth = 0,
       promptKeymap = xPromptKeymap,
       position = Top,
@@ -126,7 +129,7 @@ xPromptKeymap =
           (xK_Delete, deleteString Next),
           (xK_Left, moveCursor Prev),
           (xK_Right, moveCursor Next),
-          (xK_Home, startOfLine ),
+          (xK_Home, startOfLine),
           (xK_End, endOfLine),
           (xK_Down, moveHistory W.focusUp'),
           (xK_Up, moveHistory W.focusDown'),

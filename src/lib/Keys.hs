@@ -1,31 +1,56 @@
 module Keys where
-import Preferences
-import Log
-import Prompt
-import WindowRules
-import XMonad
+import Control.Arrow (first)
+import qualified Data.Map as M
 import Data.Maybe (isJust)
 import Graphics.X11.ExtraTypes.XF86
+import Log (emConf)
+import Preferences
+  ( myAPITestManager,
+    myDocsBrowser,
+    myEmail,
+    myFileManager,
+    myPhotoEditor,
+    mySpotify,
+    myTelegram,
+    myTerminal,
+    myTorrent,
+    myVM,
+    myWebBrowser,
+    myWhatsapp,
+    raiseXMobar,
+    takeScreenShot,
+    xmonadRestart,
+  )
+import Prompt
+  ( browserXPConfig,
+    calcPrompt,
+    calcXPConfig,
+    mySearchEngines,
+    xPromptConfig,
+  )
+import System.Exit (exitSuccess)
 import System.IO (hPutStrLn)
-import System.Exit
-import Control.Arrow (first)
+import WindowRules (myScratchPads)
+import XMonad
+import XMonad.Actions.CopyWindow (copy, copyToAll, kill1, killAllOtherCopies, runOrCopy)
 import XMonad.Actions.CycleWS
-import XMonad.Layout.Spacing
-import XMonad.Util.Run (runInTerm)
-import XMonad.Util.NamedScratchpad
-import XMonad.Actions.CopyWindow (kill1)
+  ( Direction1D (Next),
+    WSType (WSIs),
+    anyWS,
+    nextWS,
+    shiftTo,
+  )
+import XMonad.Actions.EasyMotion (selectWindow)
+import XMonad.Actions.Search (promptSearchBrowser)
 import XMonad.Actions.WithAll (killAll, sinkAll)
-import qualified Data.Map as M
-import XMonad.Prompt.DirExec
-import XMonad.Actions.CycleWS (WSType (EmptyWS,WSIs), anyWS, moveTo, nextWS, shiftTo)
+import XMonad.Layout.Spacing (decWindowSpacing, incWindowSpacing)
+import XMonad.Prompt.DirExec (dirExecPromptNamed)
 import XMonad.Prompt.Shell (shellPrompt)
 import qualified XMonad.StackSet as W
-import XMonad.Actions.Search
-import XMonad.Actions.CopyWindow (runOrCopy, copy, killAllOtherCopies, copyToAll)
-import XMonad.Actions.EasyMotion (selectWindow)
-import XMonad.Actions.TiledWindowDragging
+import XMonad.Util.NamedScratchpad (namedScratchpadAction)
+import XMonad.Util.Run (runInTerm)
 ------------------------------------------------------------------------
--- Keys
+-- Keys --
 ------------------------------------------------------------------------
 myKeys :: XConfig l0 -> M.Map (ButtonMask, KeySym) (X ())
 myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
@@ -38,7 +63,6 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
         (xK_r, spawn xmonadRestart >> spawn raiseXMobar),
         (xK_t, sinkAll),
         (xK_a, spawn myFileManager),
-     -- (xK_s, promptSearchBrowser browserXPConfig myWebBrowser mySearchEngines),
         (xK_s, selectWindow emConf >>= (`whenJust` windows . W.focusWindow)),
         (xK_d, spawn myEmail),
         (xK_f, spawn myTorrent),
@@ -65,7 +89,8 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
       ++ map
         (first $ (,) controlMask) -- Control + <Key>
         [ (xK_comma, decWindowSpacing 4),
-          (xK_period, incWindowSpacing 4)
+          (xK_period, incWindowSpacing 4),
+          (xK_space, promptSearchBrowser browserXPConfig myWebBrowser mySearchEngines)
         ]
       ++ map
         (first $ (,) shiftMask) -- Shift + <Key>
@@ -75,7 +100,7 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
         [ (xK_q, spawn myTelegram),
           (xK_w, spawn myDocsBrowser),
           (xK_r, spawn myWhatsapp),
-          (xK_d, spawn "discord"),       
+          (xK_d, spawn "discord"),
           (xK_z, killAllOtherCopies),
           (xK_x, windows copyToAll),
           (xK_e, namedScratchpadAction myScratchPads "terminal")
@@ -95,11 +120,13 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
         ]
       ++ [ ((shift .|. windowsKey, k), windows $ f i)
            | (i, k) <- zip (XMonad.workspaces conf) [xK_1, xK_2, xK_3, xK_4, xK_5, xK_6, xK_7, xK_8, xK_9, xK_0], -- WindowsKey + 1 .. 5 # Go to WorkSpace
-             (f, shift) <- [(W.greedyView, 0), (W.shift, shiftMask), (copy, mod1Mask)]]
+             (f, shift) <- [(W.greedyView, 0), (W.shift, shiftMask), (copy, mod1Mask)]
+         ]
       ++ [ ((shift .|. mod1Mask, k), windows $ f i)
            | (i, k) <- zip (XMonad.workspaces conf) [xK_1, xK_2, xK_3, xK_4, xK_5, xK_6, xK_7, xK_8, xK_9, xK_0], -- WindowsKey + 1 .. 5 # Go to WorkSpace
-             (f, shift) <- [(copy, mod1Mask)]]
-      ++ [ ((windowsKey, xK_c), dirExecPromptNamed xPromptConfig fn "/home/vicenzo/.sh/" "RunTerminal:Scripts $ ") | (fn) <- [(runInTerm " --hold ")]
+             (f, shift) <- [(copy, mod1Mask)]
+         ]
+      ++ [ ((windowsKey, xK_c), dirExecPromptNamed xPromptConfig fn "/home/vicenzo/.sh/" "RunTerminal:Scripts $ ") | fn <- [runInTerm " --hold "]
          ]
   where
     nonNSP = WSIs (return (\ws -> W.tag ws /= "NSP"))
@@ -115,4 +142,4 @@ myMouseBindings conf@(XConfig {XMonad.modMask = windowsKey}) =
       [ (button1, \w -> focus w >> mouseMoveWindow w >> windows W.shiftMaster),
         (button2, \w -> focus w >> selectWindow emConf >>= (`whenJust` windows . W.focusWindow)),
         (button3, \w -> focus w >> windows W.shiftMaster)
-      ] 
+      ]

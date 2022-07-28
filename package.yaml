@@ -34,28 +34,28 @@ executables:
     dependencies:
     - xmobar
 
-  xmonadctl:
-    source-dirs: src
-    main:                xmonadctl.hs       
-    ghc-options:
-    - -Wall
-    - -Wextra
-    - -Werror
+      #  xmonadctl:
+      #source-dirs: src
+      #main:                xmonadctl.hs       
+      #ghc-options:
+      #- -Wall
+      #- -Wextra
+      #- -Werror
    
-  xmonadpropwrite:
-    source-dirs: src
-    main:                xmonadpropwrite.hs       
-    dependencies:
-    - bytestring
+      #xmonadpropwrite:
+      # source-dirs: src
+      #main:                xmonadpropwrite.hs       
+      #dependencies:
+      #- bytestring
 
-  xmonadpropread:
-    source-dirs: src
-    main:                xmonadpropread.hs       
-    ghc-options:
-    - -Wall
-    - -Wextra
-    - -Werror
-    dependencies:
-    - utf8-string
+      #xmonadpropread:
+      #source-dirs: src
+      #main:                xmonadpropread.hs       
+      #ghc-options:
+      #- -Wall
+      #- -Wextra
+      #- -Werror
+      #dependencies:
+      #- utf8-string
 
 
