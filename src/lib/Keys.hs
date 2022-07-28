@@ -49,6 +49,8 @@ import XMonad.Prompt.Shell (shellPrompt)
 import qualified XMonad.StackSet as W
 import XMonad.Util.NamedScratchpad (namedScratchpadAction)
 import XMonad.Util.Run (runInTerm)
+import XMonad.Actions.Plane
+import XMonad.Hooks.StatusBar
 ------------------------------------------------------------------------
 -- Keys --
 ------------------------------------------------------------------------
@@ -84,7 +86,9 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
           (xK_s, spawn mySpotify),
           (xK_d, spawn myAPITestManager),
           (xK_Escape, io exitSuccess),
-          (xK_Tab, shiftTo Next anyWS)
+          (xK_Tab, shiftTo Next anyWS),
+          (xK_z, killAllStatusBars >> spawn "killall xmobar"),
+          (xK_x, spawnStatusBar "xmobar" >> spawn raiseXMobar)
         ]
       ++ map
         (first $ (,) controlMask) -- Control + <Key>
@@ -128,10 +132,18 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
          ]
       ++ [ ((windowsKey, xK_c), dirExecPromptNamed xPromptConfig fn "/home/vicenzo/.sh/" "RunTerminal:Scripts $ ") | fn <- [runInTerm " --hold "]
          ]
+      ++
+    navigationKeys
   where
     nonNSP = WSIs (return (\ws -> W.tag ws /= "NSP"))
     nonEmptyNonNSP = WSIs (return (\ws -> isJust (W.stack ws) && W.tag ws /= "NSP"))
     runTerminal = myTerminal ++ " --hold -e "
+
+
+navigationKeys :: [((KeyMask, KeySym), X ())]
+navigationKeys =
+    M.toList (planeKeys mod4Mask (Lines 1) Linear)
+
 -----------------------------------------------------------------------
 -- MouseBindings
 ------------------------------------------------------------------------
@@ -143,3 +155,5 @@ myMouseBindings conf@(XConfig {XMonad.modMask = windowsKey}) =
         (button2, \w -> focus w >> selectWindow emConf >>= (`whenJust` windows . W.focusWindow)),
         (button3, \w -> focus w >> windows W.shiftMaster)
       ]
+
+

@@ -1,21 +1,38 @@
 module WindowRules where
 
+import Data.List ( isInfixOf )
 import Data.Maybe (isJust)
-import Preferences(myAPITestManager, myFileManager, myTelegram, myTerminal)
-import Workspaces(myWorkspaces)
+import Preferences (myAPITestManager, myFileManager, myTelegram, myTerminal)
+import Workspaces (myWorkspaces)
 import XMonad
+import XMonad.Actions.TagWindows ( addTag )
 import XMonad.Hooks.FloatNext (floatNextHook)
 import XMonad.Hooks.InsertPosition (Focus (Newer), Position (End), insertPosition)
 import qualified XMonad.Hooks.ManageDocks as ManageDocks
 import qualified XMonad.Hooks.ManageHelpers as ManageHelpers
+import XMonad.Hooks.XPropManage
+    ( pmP, pmX, xPropManageHook, XPropMatch )
 import XMonad.Layout.NoBorders (hasBorder)
 import qualified XMonad.StackSet as W
 import XMonad.Util.NamedScratchpad
-    ( NamedScratchpad(NS), customFloating, namedScratchpadManageHook )
+  ( NamedScratchpad (NS),
+    customFloating,
+    namedScratchpadManageHook,
+  )
+import XMonad.Hooks.ServerMode
+    ( serverModeEventHook,
+      serverModeEventHookCmd,
+      serverModeEventHookF )
+import XMonad.Hooks.ManageDocks (manageDocks)
+xPropMatches :: [XPropMatch]
+xPropMatches =
+  [-- ([(wM_CLASS, any ("" ==))], (\w -> float w >> return (W.shift "2"))),
+    ([(wM_COMMAND, any ("screen" ==)), (wM_CLASS, any ("xterm" ==))], pmX (addTag "screen"))
+    --([(wM_NAME, any ("" `isInfixOf`))], pmP (W.shift "3"))
+  ]
 
-
-myManageHook :: ManageHook
-myManageHook =
+myManage' :: ManageHook
+myManage' =
   composeAll
     [ ManageDocks.manageDocks,
       -- open windows at the end if they are not floating
@@ -23,6 +40,9 @@ myManageHook =
       floatNextHook,
       myManageHook'
     ]
+    <+> xPropManageHook xPropMatches
+
+myManage = myManage' <+> manageDocks
 
 checkModal :: Query Bool
 checkModal = ManageHelpers.isInProperty "_NET_WM_STATE" "_NET_WM_STATE_MODAL"
@@ -103,3 +123,5 @@ myScratchPads =
   ]
   where
     launchTerminal = myTerminal ++ " --class float-window"
+
+myHandle = serverModeEventHook <+> serverModeEventHookCmd <+> serverModeEventHookF "XMONAD_PRINT" (io . putStrLn)

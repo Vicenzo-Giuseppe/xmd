@@ -36,7 +36,8 @@ import XMonad.Layout.Tabbed
 import qualified XMonad.Layout.ToggleLayouts as T (ToggleLayout (Toggle), toggleLayouts)
 import XMonad.Layout.WindowArranger (WindowArrangerMsg (..), windowArrange)
 import XMonad.Layout.WindowNavigation (windowNavigation)
-
+import XMonad.Layout.ShowWName (showWName')
+import Workspaces (myShowWNameTheme)
 ------------------------------------------------------------------------
 -- Space between Tiling Windows
 ------------------------------------------------------------------------
@@ -46,7 +47,10 @@ mySpacing i = spacingRaw False (Border 0 10 10 10) True (Border 10 10 10 10) Tru
 ------------------------------------------------------------------------
 -- Layout Hook
 ------------------------------------------------------------------------
-myLayoutHook =
+
+myLayout = showWName' myShowWNameTheme myLayout'
+
+myLayout' =
   avoidStruts $
     mouseResize $
       windowArrange $
