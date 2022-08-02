@@ -1,2 +1,2 @@
-#+title: XMonad compilled with Stack for my awesome BigLinux :brazil: 
+#+title: XMonad compilled with Stack on BigLinux :brazil: :heart: [Manjaro KDE XMONAD]
 
