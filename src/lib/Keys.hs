@@ -34,23 +34,24 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
   M.fromList $
     map
       (first $ (,) windowsKey) -- WindowsKey + <Key>
-      [ (xK_q, kill1),
+      [ 
+        (xK_q, kill1),
         (xK_w, s myWebBrowser),
         (xK_e, s myTerminal),
-        (xK_r, s xmonadRestart >> s raiseXMobar),
-        (xK_t, sinkAll),
+        (xK_r, sinkAll ),
+        (xK_t, s myEmail),
         (xK_a, s myFileManager),
-        (xK_s, vimMode),
-        (xK_d, s myEmail),
-        (xK_f, s myTorrent),
+        (xK_s, windows W.focusDown),
+        (xK_d, windows W.focusUp),
+        (xK_f, s xmonadRestart >> s raiseXMobar),
         (xK_g, s myVM),
         (xK_z, prompt),
-        (xK_x, runPrompt),
+        (xK_x, cA "Open/Close-XMobar" [killXMobar, spawnXMobar]),
         (xK_v, s myPhotoEditor),
         (xK_Tab, nextWS),
         (xK_space, sendMessage NextLayout),
-        (xK_comma, windows W.focusDown),
-        (xK_period, windows W.focusUp)
+        (xK_comma, decWindowSpacing 4),
+        (xK_period, incWindowSpacing 4)
       ]
       ++ map
         (first $ (,) (windowsKey .|. shiftMask)) -- WindowsKey + ShiftKey + <Key>
@@ -60,20 +61,21 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
           (xK_a, calcPrompt'),
           (xK_s, s mySpotify),
           (xK_d, s myAPITestManager),
-          (xK_Escape, io exitSuccess),
+          (xK_Escape, s myTorrent),
           (xK_Tab, shiftTo Next anyWS),
-          (xK_z, cA "Open/Close XMobar" [killXMobar, spawnXMobar])
+          (xK_z, runScripts)
         ]
       ++ map
         (first $ (,) controlMask) -- Control + <Key>
-        [ (xK_comma, decWindowSpacing 4),
-          (xK_period, incWindowSpacing 4),
+        [
           (xK_space, promptSearchBrowser')
         ]
       ++ map
         (first $ (,) shiftMask) -- Shift + <Key>
-        []
-      ++ map
+        [
+          (xK_space, vimMode)
+        ]
+    ++ map
         (first $ (,) mod1Mask) -- Alt + <Key>
         [ (xK_q, s myTelegram),
           (xK_w, s myDocsBrowser),
@@ -98,7 +100,7 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
         ]
       ++ goToWorkspace
       ++ copyToWorkspace
-      ++ scriptPrompt
+      ++ runScriptsInTerminal
       ++ navigationArrows
 ------------------------------------------------------------------------
 --
@@ -110,16 +112,17 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
     s = spawn
     vimMode = selectWindow emConf >>= (`whenJust` windows . W.focusWindow)
     prompt = shellPrompt xPromptConfig
-    runPrompt = dirExecPromptNamed xPromptConfig s "/home/vicenzo/.sh/" "Run:Scripts $ "
+    runScripts = dirExecPromptNamed xPromptConfig s "/home/vicenzo/.sh/" "Run:Scripts $ "
     rc = runOrCopy
     c = className
     calcPrompt' = calcPrompt calcXPConfig "="
     cA = cycleAction
     scratchTerminal = namedScratchpadAction myScratchPads "terminal"
     promptSearchBrowser' = promptSearchBrowser browserXPConfig myWebBrowser mySearchEngines
-    killXMobar = killAllStatusBars >> s "killall xmobar" >> x "XMOBAR-CLOSE"
-    spawnXMobar = spawnStatusBar "xmobar" >> s raiseXMobar >> x "XMOBAR-OPEN"
+    spawnXMobar = spawnStatusBar "xmobar" >> s raiseXMobar >> x' "OPEN"
+    killXMobar = killAllStatusBars >> s "killall xmobar" >> x "CLOSE"
     x = flash
+    x' = flash'
     navigationArrows = M.toList (planeKeys mod4Mask (Lines 1) Linear)
     goToWorkspace =
       [ ((shift .|. windowsKey, k), windows $ f i)
@@ -131,7 +134,7 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
         | (i, k) <- zip (XMonad.workspaces conf) myWorkspacesKeys, -- WindowsKey + 1 .. 5 # Go to WorkSpace
           (f, shift) <- [(copy, mod1Mask)]
       ]
-    scriptPrompt = [((windowsKey, xK_c), dirExecPromptNamed xPromptConfig fn "/home/vicenzo/.sh/" "RunTerminal:Scripts $ ") | fn <- [runInTerm " --hold "]]
+    runScriptsInTerminal = [((windowsKey .|. shiftMask, xK_c), dirExecPromptNamed xPromptConfig fn "/home/vicenzo/.sh/" "RunTerminal:Scripts $ ") | fn <- [runInTerm " --hold "]]
 -----------------------------------------------------------------------
 -- mousebindings
 -----------------------------------------------------------------------

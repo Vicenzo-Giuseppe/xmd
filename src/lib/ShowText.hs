@@ -9,21 +9,34 @@ import XMonad.Layout.ShowWName
 -----------------------------------------------------------------------
 flash :: String -> X ()
 flash text =
-  flashText myTextConfig 1 (" " ++ text ++ " ")
+  flashText myTextColor 0.7 (" " ++ text ++ " ")
 
-myTextConfig :: ShowTextConfig
-myTextConfig =
+flash' :: String -> X ()
+flash' text =
+  flashText myTextColor' 0.7 (" " ++ text ++ " ")
+
+myTextColor :: ShowTextConfig
+myTextColor =
   STC
-    { st_font = "xft:Ubuntu:weight=bold:pixelsize=128",
+    { st_font = "xft:Agave:weight=bold:pixelsize=128",
       st_bg = "#212733",
-      st_fg = "#b7bdf8"
+      st_fg = "#F28FAD"
     }
+myTextColor' :: ShowTextConfig
+myTextColor' =
+  STC
+    { st_font = "xft:Agave:weight=bold:pixelsize=128",
+      st_bg = "#212733",
+      st_fg = "#95e6cb"
+    }
+
+
 
 emConf :: EasyMotionConfig
 emConf =
   def
-    { sKeys = PerScreenKeys $ fromList [(0, [xK_f, xK_d, xK_s, xK_a]), (1, [xK_h, xK_j, xK_k, xK_l])],
-      txtCol = "#b7bdf8",
+    { sKeys = PerScreenKeys $ fromList [(0, [xK_a, xK_s, xK_d, xK_f]), (1, [xK_h, xK_j, xK_k, xK_l])],
+      txtCol = "#f9e2af",
       bgCol = "#212733",
       borderCol = "#F28FAD",
       emFont = "xft:Ubuntu:weight=bold:pixelsize=128",
@@ -34,7 +47,7 @@ emConf =
 myShowWNameTheme :: SWNConfig
 myShowWNameTheme =
   def
-    { swn_font = "xft:Ubuntu:bold:size=60",
+    { swn_font = "xft:Agave:bold:size=60",
       swn_fade = 1.0,
       swn_bgcolor = "#232634",
       swn_color = "#cdd6f4"

@@ -58,8 +58,8 @@ myManageHook' =
         [title =? t --> doFloat | t <- myTitleFloats],
         [className =? c --> ManageHelpers.doCenterFloat | c <- myCenterFloats],
         [title =? t --> ManageHelpers.doCenterFloat | t <- myTitleCenterFloats],
-        [className =? c --> doShift ([" web ", " dev ", " docs ", " media ", " download ", " game ", " term ", " term2 ", " term3 ", " konsole "] !! ws) | (c, ws) <- myShifts],
-        [title =? c --> doShift ([" web ", " dev ", " docs ", " media ", " download ", " game ", " term ", " term2 ", " term3 ", " konsole "] !! ws) | (c, ws) <- myTitleShifts],
+        [className =? c --> doShift (myWorkspaces !! ws) | (c, ws) <- myShifts],
+        [title =? c --> doShift (myWorkspaces !! ws) | (c, ws) <- myTitleShifts],
         [className =? c --> hasBorder False | c <- myClassNoBorder],
         [role =? r --> ManageHelpers.doCenterFloat | r <- myRoleCenterFloats],
         [(className =? "firefox" <&&> resource =? "Dialog") --> doFloat], -- Float Firefox Dialog

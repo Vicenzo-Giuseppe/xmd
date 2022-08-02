@@ -1,4 +1,5 @@
 .stack-work/
 stack.yaml.lock
 XMonad-Base.cabal
+hie.yaml
 

@@ -36,7 +36,7 @@ myFont = "xft:mononoki Nerd Font:"
 ------------------------------------------------------------------------
 -- Custom Aliases
 ------------------------------------------------------------------------
-raiseXMobar = "sleep 0.5 && xdotool windowraise `xdotool search --all --name xmobar`"
+raiseXMobar = "sleep 0.6 && xdotool windowraise `xdotool search --all --name xmobar`"
 
 takeScreenShot = "scrot '%Y-%m-%d-%s_$wx$h.jpg' -e 'mv $f $$(xdg-user-dir SCREENSHOTS)'"
 
