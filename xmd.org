@@ -1,2 +1,0 @@
-#+title: XMonad compilled with Stack for my awesome BigLinux :brazil: 
-
