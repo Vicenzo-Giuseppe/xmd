@@ -1,4 +1,4 @@
-name:                XMonad
+name:                XMonad-Base
 version:             1.0.0.0
 
 dependencies:
@@ -21,7 +21,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - XMonad
+    - XMonad-Base
 
   xmobar:
     source-dirs: src

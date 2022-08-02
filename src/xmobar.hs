@@ -25,8 +25,8 @@ xmonadLog = Run $ XMonadLog
 myCommands = [btc, memory, cpu, multicoretemp, date, disku, xmonadLog, sysupdate]
 myTemplate :: [Char]
 myTemplate =
-      " <fc=#212733> |</fc><fc=#95e6cb><fn=2>\62815</fn></fc>\
-       \<fc=#212733> |</fc> <fc=#ff79c6><action=`alacritty -e watch df -h`>%disku%</action></fc>\
+      " <fc=#212733> |</fc> <fc=#95e6cb><fn=2>\62815</fn></fc> \
+       \<fc=#212733> |</fc> <fc=#cad3f5><action=`alacritty -e watch df -h`>%disku%</action></fc>\
        \<fc=#212733> |</fc> <fc=#73d0ff><action=`alacritty -e s-tui`> %cpu% %multicoretemp%</action></fc>\
        \<fc=#212733> |</fc> <fc=#ff79c6><action=`alacritty -e htop`>%memory%</action></fc>\
        \}<fc=#212733>|</fc> %XMonadLog%\

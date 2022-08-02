@@ -1,51 +1,34 @@
 module Layout where
-
-import Preferences (myFont)
-import XMonad (Default (def), Full (Full), Mirror (Mirror), (|||))
-import XMonad.Actions.MouseResize (mouseResize)
-import XMonad.Hooks.ManageDocks (ToggleStruts (..), avoidStruts, docksEventHook, manageDocks)
-import XMonad.Layout.GridVariants (Grid (Grid))
-import XMonad.Layout.LayoutModifier (ModifiedLayout)
-import XMonad.Layout.LimitWindows (limitWindows)
-import XMonad.Layout.Magnifier (magnifier)
-import XMonad.Layout.MultiToggle (EOT (EOT), mkToggle, single, (??))
-import XMonad.Layout.MultiToggle.Instances (StdTransformers (MIRROR, NBFULL, NOBORDERS))
-import XMonad.Layout.NoBorders (smartBorders)
-import XMonad.Layout.Renamed (Rename (Replace), renamed)
-import XMonad.Layout.ResizableTile (ResizableTall (ResizableTall))
-import XMonad.Layout.Simplest (Simplest (Simplest))
+import Workspaces
+import Preferences 
+import ShowText
+import qualified XMonad.Layout.ToggleLayouts as T
+import XMonad
+import XMonad.Actions.MouseResize
+import XMonad.Hooks.ManageDocks
+import XMonad.Layout.GridVariants
+import XMonad.Layout.LayoutModifier 
+import XMonad.Layout.LimitWindows 
+import XMonad.Layout.Magnifier
+import XMonad.Layout.MultiToggle
+import XMonad.Layout.MultiToggle.Instances
+import XMonad.Layout.NoBorders
+import XMonad.Layout.Renamed
+import XMonad.Layout.ResizableTile
+import XMonad.Layout.Simplest
 import XMonad.Layout.Spacing
-  ( Border (Border),
-    Spacing,
-    spacingRaw,
-  )
-import XMonad.Layout.SubLayouts (subLayout)
+import XMonad.Layout.SubLayouts
 import XMonad.Layout.Tabbed
-  ( Theme
-      ( activeBorderColor,
-        activeColor,
-        activeTextColor,
-        fontName,
-        inactiveBorderColor,
-        inactiveColor,
-        inactiveTextColor
-      ),
-    shrinkText,
-    tabbed,
-  )
-import qualified XMonad.Layout.ToggleLayouts as T (ToggleLayout (Toggle), toggleLayouts)
-import XMonad.Layout.WindowArranger (WindowArrangerMsg (..), windowArrange)
-import XMonad.Layout.WindowNavigation (windowNavigation)
-import XMonad.Layout.ShowWName (showWName')
-import Workspaces (myShowWNameTheme)
+import XMonad.Layout.WindowArranger
+import XMonad.Layout.WindowNavigation
+import XMonad.Layout.ShowWName
 ------------------------------------------------------------------------
--- Space between Tiling Windows
+-- space between tiling windows
 ------------------------------------------------------------------------
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border 0 10 10 10) True (Border 10 10 10 10) True
-
 ------------------------------------------------------------------------
--- Layout Hook
+-- layout hook
 ------------------------------------------------------------------------
 
 myLayout = showWName' myShowWNameTheme myLayout'
@@ -65,7 +48,7 @@ myLayout' =
         ||| tabs
 
 ------------------------------------------------------------------------
--- Tiling Layouts
+-- layouts
 ------------------------------------------------------------------------
 grid =
   renamed [Replace " <fc=#b7bdf8><fn=2> \61449 </fn>Grid</fc>"] $

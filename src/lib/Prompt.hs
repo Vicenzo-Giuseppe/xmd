@@ -1,19 +1,16 @@
 module Prompt where
-
-import Control.Arrow (first)
-import Data.Char (isSpace)
-import qualified Data.Map as M
-import Preferences ( myFont )
-import XMonad
-import qualified XMonad.Actions.Search as S
-import XMonad.Layout.TabBarDecoration
-    ( XPPosition(CenteredAt, Top, xpCenterY, xpWidth) )
-import XMonad.Prompt
-import XMonad.Prompt.FuzzyMatch ( fuzzyMatch )
-import XMonad.Prompt.Input ( (?+), inputPrompt )
+import Preferences
 import qualified XMonad.StackSet as W
-import XMonad.Util.Run (runProcessWithInput)
-
+import qualified Data.Map as M
+import qualified XMonad.Actions.Search as S
+import XMonad
+import XMonad.Layout.TabBarDecoration
+import XMonad.Prompt
+import XMonad.Prompt.FuzzyMatch
+import XMonad.Prompt.Input
+import XMonad.Util.Run
+import Control.Arrow
+import Data.Char
 ------------------------------------------------------------------------
 -- XPrompt
 ------------------------------------------------------------------------

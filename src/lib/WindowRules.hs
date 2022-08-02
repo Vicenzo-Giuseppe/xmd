@@ -1,29 +1,26 @@
 module WindowRules where
-
-import Data.List ( isInfixOf )
-import Data.Maybe (isJust)
-import Preferences (myAPITestManager, myFileManager, myTelegram, myTerminal)
-import Workspaces (myWorkspaces)
-import XMonad
-import XMonad.Actions.TagWindows ( addTag )
-import XMonad.Hooks.FloatNext (floatNextHook)
-import XMonad.Hooks.InsertPosition (Focus (Newer), Position (End), insertPosition)
+import Preferences
+import Workspaces
+import qualified XMonad.StackSet as W
 import qualified XMonad.Hooks.ManageDocks as ManageDocks
 import qualified XMonad.Hooks.ManageHelpers as ManageHelpers
+import XMonad
+import XMonad.Actions.TagWindows
+import XMonad.Hooks.FloatNext 
+import XMonad.Hooks.InsertPosition
 import XMonad.Hooks.XPropManage
-    ( pmP, pmX, xPropManageHook, XPropMatch )
-import XMonad.Layout.NoBorders (hasBorder)
-import qualified XMonad.StackSet as W
+import XMonad.Layout.NoBorders 
 import XMonad.Util.NamedScratchpad
-  ( NamedScratchpad (NS),
-    customFloating,
-    namedScratchpadManageHook,
-  )
 import XMonad.Hooks.ServerMode
-    ( serverModeEventHook,
-      serverModeEventHookCmd,
-      serverModeEventHookF )
-import XMonad.Hooks.ManageDocks (manageDocks)
+import XMonad.Hooks.ManageDocks
+import XMonad.Actions.ShowText
+import XMonad.Hooks.DebugEvents 
+import XMonad.Hooks.WindowSwallowing
+import Data.List
+import Data.Maybe
+-----------------------------------------------------------------------
+--
+-----------------------------------------------------------------------
 xPropMatches :: [XPropMatch]
 xPropMatches =
   [-- ([(wM_CLASS, any ("" ==))], (\w -> float w >> return (W.shift "2"))),
@@ -124,4 +121,4 @@ myScratchPads =
   where
     launchTerminal = myTerminal ++ " --class float-window"
 
-myHandle = serverModeEventHook <+> serverModeEventHookCmd <+> serverModeEventHookF "XMONAD_PRINT" (io . putStrLn)
+myHandle = serverModeEventHook <+> serverModeEventHookCmd <+> serverModeEventHookF "XMONAD_PRINT" (io . putStrLn) <+> handleTimerEvent <+> debugEventsHook <+> swallowEventHook (className =? "Alacritty") (return True)
