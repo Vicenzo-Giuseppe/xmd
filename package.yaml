@@ -8,6 +8,7 @@ dependencies:
 - X11
 - containers
 - directory
+
 library:
   source-dirs: src/lib
 
@@ -22,7 +23,6 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - XMonad-Base
-
   xmobar:
     source-dirs: src
     main:                xmobar.hs       

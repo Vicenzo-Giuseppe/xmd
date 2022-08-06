@@ -1,6 +1,5 @@
 module WindowRules where
 import Preferences
-import Workspaces
 import qualified XMonad.StackSet as W
 import qualified XMonad.Hooks.ManageDocks as ManageDocks
 import qualified XMonad.Hooks.ManageHelpers as ManageHelpers
@@ -14,10 +13,8 @@ import XMonad.Util.NamedScratchpad
 import XMonad.Hooks.ServerMode
 import XMonad.Hooks.ManageDocks
 import XMonad.Actions.ShowText
-import XMonad.Hooks.DebugEvents 
 import XMonad.Hooks.WindowSwallowing
-import Data.List
-import Data.Maybe
+
 -----------------------------------------------------------------------
 --
 -----------------------------------------------------------------------
@@ -110,15 +107,17 @@ myManageHook' =
 
 myScratchPads :: [NamedScratchpad]
 myScratchPads =
-  [ NS "discord" "discord" (appName =? "discord") (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
-    NS "spotify" "spotify" (appName =? "spotify") (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
-    NS "telegram" myTelegram (title =? "Telegram") (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
-    NS "insomnia" myAPITestManager (title =? "Insomnia") (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
-    NS "vieb" "vieb" (title =? "Vieb") (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
-    NS "dolphin" myFileManager (className =? "dolphin") (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
-    NS "terminal" launchTerminal (appName =? "float-window") (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7)
+  [ NS myDiscord myDiscord (className =? myDiscord) (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
+    NS mySpotify mySpotify (className =? mySpotify) (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
+    NS myTelegram myTelegram (className =? "TelegramDesktop") (customFloating $ W.RationalRect 1.15 0.15 0.7 0.7),
+    NS myAPIClient myAPIClient (className =? myAPIClient) (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
+    NS myVimBrowser myVimBrowser (className =? "Vieb") (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
+    NS myFileManager myFileManager (className =? myFileManager) (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
+    NS myImageViewer myImageViewer (className =? myImageViewer) (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7),
+    NS "floatTerminal" launchTerminal (appName =? "float-window") (customFloating $ W.RationalRect 0.15 0.15 0.7 0.7)
   ]
   where
     launchTerminal = myTerminal ++ " --class float-window"
 
-myHandle = serverModeEventHook <+> serverModeEventHookCmd <+> serverModeEventHookF "XMONAD_PRINT" (io . putStrLn) <+> handleTimerEvent <+> debugEventsHook <+> swallowEventHook (className =? "Alacritty") (return True)
+
+myHandle = serverModeEventHook <+> serverModeEventHookCmd <+> serverModeEventHookF "XMONAD_PRINT" (io . putStrLn) <+> handleTimerEvent <+> swallowEventHook (className =? "Alacritty") (return True)

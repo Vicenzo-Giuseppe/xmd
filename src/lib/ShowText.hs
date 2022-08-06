@@ -9,28 +9,49 @@ import XMonad.Layout.ShowWName
 -----------------------------------------------------------------------
 flash :: String -> X ()
 flash text =
-  flashText myTextColor 0.7 (" " ++ text ++ " ")
+  flashText myFlashC 0.7 (" " ++ text ++ " ")
 
 flash' :: String -> X ()
 flash' text =
-  flashText myTextColor' 0.7 (" " ++ text ++ " ")
+  flashText myFlashC' 0.7 (" " ++ text ++ " ")
 
-myTextColor :: ShowTextConfig
-myTextColor =
+warn :: String -> X ()
+warn text =
+  flashText myWarnC 0.7 (" " ++ text ++ " ")
+
+warn' :: String -> X ()
+warn' text =
+  flashText myWarnC' 0.7 (" " ++ text ++ " ")
+
+myFlashC :: ShowTextConfig
+myFlashC =
   STC
     { st_font = "xft:Agave:weight=bold:pixelsize=128",
       st_bg = "#212733",
       st_fg = "#F28FAD"
     }
-myTextColor' :: ShowTextConfig
-myTextColor' =
+myFlashC' :: ShowTextConfig
+myFlashC' =
   STC
     { st_font = "xft:Agave:weight=bold:pixelsize=128",
       st_bg = "#212733",
       st_fg = "#95e6cb"
     }
 
-
+myWarnC :: ShowTextConfig
+myWarnC =
+  STC
+    { st_font = "xft:Agave:weight=bold:pixelsize=88",
+      st_bg = "#a6adc8",
+      st_fg = "#f9e2af"
+    }
+myWarnC' :: ShowTextConfig
+myWarnC' =
+  STC
+    { st_font = "xft:Agave:weight=bold:pixelsize=88",
+      st_bg = "#45475a",
+      st_fg = "#89dceb"
+    }
 
 emConf :: EasyMotionConfig
 emConf =

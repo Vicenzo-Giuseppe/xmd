@@ -2,47 +2,66 @@ import Xmobar hiding (date)
 ------------------------------------------------------------------------
 -- Custom Interfaces
 ------------------------------------------------------------------------
-cryptoPrice :: [Char] -> [Char]
-cryptoPrice pair = "curl 'https://api.coinbase.com/v2/prices/"++pair++"/spot?currency=USD' -s | jq '.data.amount' -r | sed 's/...$//'" 
-btc = Run $ Com "/bin/sh" ["-c", cryptoPrice "BTC-USD"] "btc" 20
-sysupdate = Run $ Com "/bin/sh" ["-c", "checkupdates | wc -l"] "sysupdate" 20
+cryptoPrice pair = "curl 'https://api.coinbase.com/v2/prices/"++pair++"/spot?currency=USD' -s | jq '.data.amount' -r | sed 's/...$//'"
+gpu' cmd sym = "echo $(radeontop --ticks 30 --limit 1 --dump-interval 1 --dump - | "++cmd++" )"++sym++""
+btc = Run $ Com "/bin/sh"
+  ["-c", cryptoPrice "BTC-USD"] "btc" 20
+sysupdate = Run $ Com "/bin/sh" 
+  ["-c", "checkupdates | wc -l"] "sysupdate" 20
+gpuavg = Run $ Com "/bin/sh"
+  ["-c", gpu' "grep -oP \"gpu\\s+\\K\\w+\"" "%" ] "gpuavg" 20
+gputemp = Run $ Com "/bin/sh" ["-c", "echo $(sensors | grep edge: | awk '{print $2}' | tr -d '+.' | sed 's/...$//')°C"] "gputemp" 20
+gpufreq = Run $ Com "/bin/sh"
+  ["-c", gpu' "cut -d \",\" -f16 | tr -d \".ghz\"| grep -oP \"%\\s+\\K\\w+\" | sed 's/.$//' | sed ':a;s/\\B[0-9]\\{2\\}\\>/.&/;ta'" "Ghz"] "gpufreq" 20
+gpumem = Run $ Com "/bin/sh"
+  ["-c", gpu' "cut -d \",\" -f13 | grep -oP \"%\\s+\\K\\w+\" | sed -r \":r;s/\\b[0-9]{1,3}\\b/0&/g;tr\" | sed ':a;s/\\B[0-9]\\{3\\}\\>/.&/;ta' |  sed 's/.$//'" "Gb"] "gpumem" 20
+cpufreq = Run $ CpuFreq 
+  ["-t", "<avg>GHz", "-L", "0", "-H", "2",
+   "-l", "lightblue", "-n","white", "-h", "red", "-d", "2"] 50
 ------------------------------------------------------------------------
 -- Default Interfaces
 ------------------------------------------------------------------------
 memory = Run $ Memory
-   ["-t", "<fn=2>\62776</fn>  <usedratio>% <used>GB", "--" , "--scale", "1024"] 20
-cpu = Run $ Cpu
-   ["-t", "<fn=2>\62171</fn> <total>% ","-H","50","--high","red"] 20
+  ["-t", "<fn=2>\62776</fn>  <usedratio>% <used>GB ", "-d", "1","--" , "--scale", "1024"] 20
+cpu = Run $ MultiCpu
+  ["-t", "<fn=2>\62171</fn>  <total>",
+   "-L", "44","-H","66",
+   "-h","#FFF", "-l", "#FFF", "-n", "#FFF",
+   "-S", "True"] 20
 multicoretemp = Run $ MultiCoreTemp
-   ["-t", "<fn=2></fn><avg> °C",
-    "-L", "20", "-H", "80" ] 20
+  ["-t", "<avg>°C",
+   "-L", "50", "-H", "70",
+   "-l", "#FFF", "-h", "#FFF", "-n", "#FFF"
+  ] 20
 date = Run $ Date "<fc=#bae67e><fn=5>\61555</fn> %a, %d  %b</fc><fc=#212733>| </fc><fc=#f27983><fn=5>\61463</fn> %H:%M</fc> " "date" 50
 disku = Run $ DiskU [("/", "<fn=2>\62003</fn> SSD: <free>")] [] 60
-volume = Run $ Alsa "default" "Master" ["-t", "<fn=2><status></fn> <fn=1><volume></fn>%", "--", "-O", "", "-o", "\63145", "-h", "\61480", "-m", "\61479", "-l", "\61478", "-L", "12", "-C", "#fab387"]
+volume = Run $ Alsa "default" "Master" ["-t", " <volume>%", "--", "-O", "", "-o", "\63145", "-h", "\61480", "-m", "\61479", "-l", "\61478", "-L", "12", "-C", "#fab387"] -- "<fn=2><status></fn>
 xmonadLog = Run $ XMonadLog
 ------------------------------------------------------------------------
--- Commands and Template 
+-- Commands and Template
 ------------------------------------------------------------------------
-myCommands = [btc, memory, cpu, multicoretemp, date, disku, xmonadLog, sysupdate, volume]
+myCommands = [btc, memory, cpu, multicoretemp, date, disku, xmonadLog, sysupdate, volume, gputemp, gpuavg, cpufreq, gpufreq, gpumem ]
 myTemplate :: [Char]
 myTemplate =
       " <fc=#212733> |</fc> <fc=#95e6cb><fn=2>\62815</fn></fc> \
-       \<fc=#212733> |</fc> <fc=#cad3f5><action=`alacritty -e watch df -h`>%disku%</action></fc>\
-       \<fc=#212733> |</fc> <fc=#73d0ff><action=`alacritty -e s-tui`> %cpu% %multicoretemp%</action></fc>\
-       \<fc=#212733> |</fc> <fc=#ff79c6><action=`alacritty -e htop`>%memory%</action></fc>\
-       \<fc=#212733> |</fc> <fc=#f9e2af><action=`alacritty -e `>%alsa:default:Master%</action></fc>\
-       \}<fc=#212733>|</fc> %XMonadLog%\
-       \{<fc=#212733> |</fc> <fc=#d4bfff><action=`alacritty -e yay -Syu`><fn=2>\62299</fn> %sysupdate%</action></fc>\
-       \<fc=#212733>|</fc> <fc=#ffd580><action=`alacritty --hold -e curl rate.sx/btc@10d`><fn=1>\61786:%btc%</fn></action></fc>\
+       \<fc=#212733> |</fc> <fc=#cad3f5><action=`alacritty -e ncdu`>%disku%</action></fc>\
+       \<fc=#212733> |</fc> <fc=#cba6f7><action=`alacritty -e htop`>%memory%</action></fc>\
+       \<fc=#212733> |</fc> <fc=#94e2d5><action=`alacritty -e s-tui`>%multicpu% %multicoretemp% %cpufreq%</action></fc>\
+       \}<fc=#212733> |</fc> <fc=#d4bfff><action=`alacritty -e yay -Syu`><fn=0>\62299</fn> %sysupdate%</action></fc>\
+       \<fc=#212733>|</fc> %XMonadLog%\
+       \<fc=#212733> |</fc> <fc=#94e2d5><action=`alacritty -e radeontop -c`>RX-580<fc=#cdd6f4> %gpuavg% %gpufreq% %gpumem% </fc><fc=#f38ba8>%gputemp% </fc></action></fc>\
+       \{<fc=#212733> |</fc> <fc=#f9e2af><action=`alacritty -e `>%alsa:default:Master%</action></fc>\
+       \<fc=#212733>|</fc> <fc=#ffd580><action=`alacritty --hold -e curl rate.sx/btc@3m`><fn=3>\62329:</fn> %btc%</action></fc>\
        \<fc=#212733> |</fc> %date% <fc=#212733> | </fc>"
 ------------------------------------------------------------------------
--- Config 
+-- Config
 ------------------------------------------------------------------------
-config :: Config 
+config :: Config
 config =
-  defaultConfig {font = "xft:Ubuntu:weight=bold:pixelsize=20:antialias=true:hinting=true,Font Awesome 6 Free Regular:pixelsize=22:antialias=true:hinting=true"
+  defaultConfig {font = "xft:Ubuntu:weight=bold:pixelsize=20:antialias=true:hinting=true,Font Awesome 6 Free:pixelsize=22:antialias=true:hinting=true"
        , additionalFonts = [ "xft:mononoki Nerd Font:pixelsize=22:antialias=true:hinting=true"
                            , "xft:Font Awesome 6 Free Solid:pixelsize=22:antialias=true:hinting=true"
+                           , "xft:Font Awesome 6 Brands:pixelsize=22:antialias=true:hinting=true"
                            ]
        , bgColor = "#212733"
        , fgColor = "#ff6c6b"
@@ -54,13 +73,12 @@ config =
        , commands = myCommands
        , alignSep = "}{"
        , template = myTemplate
-       , textOutput = False
        }
 ------------------------------------------------------------------------
 -- Main 
 ------------------------------------------------------------------------
 main :: IO ()
 main = do
-  xmobar config 
+  xmobar config
 
 
