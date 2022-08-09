@@ -7,6 +7,7 @@ windowsKey = mod4Mask
 myWorkspaces =["1:web","2:terminal","3:","4:media","5:download","6:game","7:","8:","9:","0:"] 
 myWorkspaceSwitchKeys = [xK_1, xK_2, xK_3, xK_4, xK_5, xK_6, xK_7, xK_8, xK_9, xK_0]
 myTerminal = "alacritty"
+my2ndTerminal = "konsole"
 myFirefox = "firefox"
 my2ndBrowser = "brave"
 myTorrent = "qbittorrent"

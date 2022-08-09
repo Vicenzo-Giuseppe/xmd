@@ -1,0 +1,59 @@
+#!/bin/sh
+
+GREEN=`echo -e '\033[92m'`
+GRAY=`echo -e '\033[90m'`
+RED=`echo -e '\033[91m'`
+CYAN=`echo -e '\033[96m'`
+BLUE=`echo -e '\033[94m'`
+YELLOW=`echo -e '\033[93m'`
+PURPLE=`echo -e '\033[95m'`
+RESET=`echo -e '\033[0m'`
+
+arrow="s/>/$CYAN&$RESET/;"
+compilling="s/Compiling/$CYAN&$PURPLE/g;"
+afterSemi="s/.*:/$YELLOW&$RESET/g;"
+parenthesis="s/[{}()]/$BLUE&$RESET/g;"
+error="s/error:/$RED&$RESET/g;"
+of="s/of/$PURPLE&$RESET/g;"
+import="s/import/$PURPLE&$GREEN/g;"
+beginLine="s/.*/$GRAY&$RESET/g;"
+string="s/\"[^\"]*\"/$YELLOW&$RESET/g;"
+# shellcheck disable=1087
+left_blacket="s/\[\([^09]\)/$BLUE[$RESET\1/g;"
+right_blacket="s/\]/$BLUE&$RESET/g;"
+pipe="s/|/$GREEN&$RESET/g;"
+bracket="s/\^/$CYAN&$RESET/g;"
+backslash="s/\//$GREEN&$RESET/g;"
+for="s/for/$GRAY&$RESET/g;"
+building="s/building/$YELLOW&$RESET/g;"
+library="s/library/$YELLOW&$RESET/g;"
+xmonad="s/XMonad-0.0.0../$YELLOW&$RESET/g;"
+semicolon="s/\,/$RED&$RESET/g;"
+points="s/\:/$CYAN&$RESET/g;"
+hash="s/\#/$RED&$RESET/g;"
+
+stack build \
+		--copy-bins --local-bin-path "/home/vicenzo/.local/bin" \
+    ${1+"$@"} 2>&1 |\
+ sed    "$arrow\
+         $compilling\
+         $error \
+         $parenthesis\
+         $of \
+         $left_blacket \
+         $right_blacket \
+         $pipe \
+         $import \
+         $bracket \
+         $for \
+         $string \
+         $building \
+         $library \
+         $backslash \
+         $afterSemi \
+         $beginLine \
+         $xmonad \
+         $semicolon \
+         $points \
+         $hash
+        "

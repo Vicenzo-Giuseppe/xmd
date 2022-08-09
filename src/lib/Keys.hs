@@ -40,12 +40,12 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
         (xK_a, s myFileManager),
         (xK_s, windows W.focusDown),
         (xK_d, windows W.focusUp),
-        (xK_f, cA "Recompile/Restart-XMonad" [recompile, restart]),
+        (xK_f, cA "Recompile/Restart-XMonad" [recompile , restart]),
         (xK_g, s myVM),
         (xK_z, prompt),
         (xK_x, cA "Open/Close-XMobar" [killXMobar, spawnXMobar]),
         (xK_v, s myPhotoEditor),
-        (xK_v, s my2ndBrowser),
+        (xK_b, s my2ndBrowser),
         (xK_Tab, nextWS),
         (xK_space, sendMessage NextLayout),
         (xK_comma, decWindowSpacing 4),
@@ -136,7 +136,7 @@ myKeys conf@(XConfig {XMonad.modMask = windowsKey}) =
       ]
     runScriptsInTerminal = [((windowsKey .|. shiftMask, xK_c), dirExecPromptNamed xPromptConfig fn "/home/vicenzo/.sh/" "RunTerminal:Scripts $ ") | fn <- [runInTerm " --hold "]]
     restart = s "xmonadctl 29 && sleep 0.5 && xdotool windowraise `xdotool search --all --name xmobar`"
-    recompile = s "make -C /home/vicenzo/xmd/" >> y "Recompilling..."
+    recompile = s "make -C /home/vicenzo/xmd/" >> rc my2ndTerminal (c =? "konsole") >> y "Recompilling..."
 -----------------------------------------------------------------------
 -- mousebindings
 -----------------------------------------------------------------------
@@ -146,5 +146,5 @@ myMouseBindings conf@(XConfig {XMonad.modMask = windowsKey}) =
       (first $ (,) windowsKey) --  WindowsKey + <Key>
       [ (button1, \w -> focus w >> mouseMoveWindow w >> windows W.shiftMaster),
         (button2, \w -> focus w >> selectWindow emConf >>= (`whenJust` windows . W.focusWindow)),
-        (button3, \w -> focus w >> windows W.shiftMaster)
+        (button3, \w -> focus w >> mouseResizeWindow w >> windows W.shiftMaster)
       ]
